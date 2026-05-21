@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
+import { asyncHandler } from '@/shared/middleware/async-handler';
 import { AssignmentService } from '../service/assignment.service';
 import { validateCreateAssignment, validateUpdateAssignment } from '../validators/assignment.validator';
 import { AssignmentFirebaseRepository } from '../repository/assignment.repository.firebase';
-import { asyncHandler } from '../../../shared/middleware/async-handler';
 
 const repository = new AssignmentFirebaseRepository();
 const service = new AssignmentService(repository);

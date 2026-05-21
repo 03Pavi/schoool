@@ -1,18 +1,20 @@
-import { NextRequest } from 'next/server'
-import { ok } from '@/shared/api/response'
+import { NextRequest, NextResponse } from 'next/server'
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
+
+// GET /api/search/classes
 export async function GET(request: NextRequest) {
-  return ok('search/classes list fetched', [], { page: 1, limit: 10, total: 0 })
-}
-
-export async function POST() {
-  return ok('search/classes create action accepted', {})
-}
-
-export async function PATCH() {
-  return ok('search/classes patch action accepted', {})
-}
-
-export async function DELETE() {
-  return ok('search/classes delete action accepted', {})
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/search/classes${searchParams ? `?${searchParams}` : ''}`
+  
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

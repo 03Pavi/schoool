@@ -1,18 +1,74 @@
-import { NextRequest } from 'next/server'
-import { ok } from '@/shared/api/response'
+import { NextRequest, NextResponse } from 'next/server'
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
+
+// GET /api/exams
 export async function GET(request: NextRequest) {
-  return ok('exams list fetched', [], { page: 1, limit: 10, total: 0 })
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/exams${searchParams ? `?${searchParams}` : ''}`
+  
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
-export async function POST() {
-  return ok('exams create action accepted', {})
+// POST /api/exams
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/exams`
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
-export async function PATCH() {
-  return ok('exams patch action accepted', {})
+// PATCH /api/exams/:id
+export async function PATCH(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/exams?${searchParams}`
+  
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
-export async function DELETE() {
-  return ok('exams delete action accepted', {})
+// DELETE /api/exams/:id
+export async function DELETE(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/exams?${searchParams}`
+  
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

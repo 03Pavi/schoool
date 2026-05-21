@@ -1,18 +1,21 @@
-import { NextRequest } from 'next/server'
-import { ok } from '@/shared/api/response'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  return ok('auth list fetched', [], { page: 1, limit: 10, total: 0 })
-}
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
 
-export async function POST() {
-  return ok('auth create action accepted', {})
-}
-
-export async function PATCH() {
-  return ok('auth patch action accepted', {})
-}
-
-export async function DELETE() {
-  return ok('auth delete action accepted', {})
+// POST /api/auth
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/auth`
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

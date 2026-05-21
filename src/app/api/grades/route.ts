@@ -1,105 +1,74 @@
-import { NextRequest } from 'next/server'
-import { classes, createId, findByIds, grades, sections, subjectsMaster, type GradeItem, type RecordStatus } from '../academics/_data'
-import { parseListQuery, paginate } from '@/shared/api/contracts'
-import { fail, ok } from '@/shared/api/response'
-import { getRequestRole, hasPermission } from '@/shared/api/rbac'
+import { NextRequest, NextResponse } from 'next/server'
 
-const mapGrade = (grade: GradeItem) => ({
-  id: grade.id,
-  name: grade.name,
-  status: grade.status,
-  classes: findByIds(classes, grade.classIds),
-  sections: findByIds(sections, grade.sectionIds),
-  subjects: findByIds(subjectsMaster, grade.subjectIds),
-})
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
 
-const parseBody = async (request: NextRequest) => {
-  const body = await request.json()
-  return {
-    name: String(body.name ?? ''),
-    status: (body.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE') as RecordStatus,
-    classIds: Array.isArray(body.classIds) ? body.classIds : [],
-    sectionIds: Array.isArray(body.sectionIds) ? body.sectionIds : [],
-    subjectIds: Array.isArray(body.subjectIds) ? body.subjectIds : [],
-  }
-}
-
+// GET /api/grades
 export async function GET(request: NextRequest) {
-  const role = getRequestRole(request)
-  if (!role || !hasPermission(role, 'grade:view')) return fail('Unauthorized', 401)
-
-  const query = parseListQuery(request.nextUrl)
-  const rows = grades.map(mapGrade)
-  const searched = query.search
-    ? rows.filter((row) =>
-        `${row.name} ${row.classes.map((c) => c.name).join(' ')} ${row.subjects.map((s) => s.name).join(' ')}`
-          .toLowerCase()
-          .includes(query.search)
-      )
-    : rows
-
-  const sorted = [...searched].sort((a, b) => {
-    const av = String((a as any)[query.sort] ?? a.name).toLowerCase()
-    const bv = String((b as any)[query.sort] ?? b.name).toLowerCase()
-    return query.order === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/grades${searchParams ? `?${searchParams}` : ''}`
+  
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
   })
-
-  const data = paginate(sorted, query.page, query.limit)
-  return ok('Grades fetched', data, { page: query.page, limit: query.limit, total: sorted.length })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
+// POST /api/grades
 export async function POST(request: NextRequest) {
-  const role = getRequestRole(request)
-  if (!role || !hasPermission(role, 'grade:create')) return fail('Unauthorized', 401)
-
-  const payload = await parseBody(request)
-  if (!payload.name) return fail('Grade name is required', 400)
-
-  const newGrade: GradeItem = {
-    id: createId('grade'),
-    name: payload.name,
-    status: payload.status,
-    classIds: payload.classIds,
-    sectionIds: payload.sectionIds,
-    subjectIds: payload.subjectIds,
-  }
-  grades.unshift(newGrade)
-  return ok('Grade created', mapGrade(newGrade))
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/grades`
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
+// PATCH /api/grades/:id
 export async function PATCH(request: NextRequest) {
-  const role = getRequestRole(request)
-  if (!role || !hasPermission(role, 'grade:update')) return fail('Unauthorized', 401)
-
-  const id = request.nextUrl.searchParams.get('id')
-  if (!id) return fail('Grade id is required', 400)
-
-  const payload = await parseBody(request)
-  const idx = grades.findIndex((g) => g.id === id)
-  if (idx < 0) return fail('Grade not found', 404)
-
-  grades[idx] = {
-    ...grades[idx],
-    name: payload.name || grades[idx].name,
-    status: payload.status,
-    classIds: payload.classIds,
-    sectionIds: payload.sectionIds,
-    subjectIds: payload.subjectIds,
-  }
-
-  return ok('Grade updated', mapGrade(grades[idx]))
+  const searchParams = request.nextUrl.searchParams.toString()
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/grades?${searchParams}`
+  
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
+// DELETE /api/grades/:id
 export async function DELETE(request: NextRequest) {
-  const role = getRequestRole(request)
-  if (!role || !hasPermission(role, 'grade:delete')) return fail('Unauthorized', 401)
-
-  const id = request.nextUrl.searchParams.get('id')
-  if (!id) return fail('Grade id is required', 400)
-
-  const idx = grades.findIndex((g) => g.id === id)
-  if (idx < 0) return fail('Grade not found', 404)
-
-  grades.splice(idx, 1)
-  return ok('Grade deleted', { id })
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/grades?${searchParams}`
+  
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+  
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

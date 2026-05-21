@@ -1,48 +1,74 @@
-import { NextRequest } from 'next/server'
-import { ok } from '@/shared/api/response'
-import { attendanceRecords } from './_data'
-import type { AttendanceRecord } from '@/entities/attendance/types'
+import { NextRequest, NextResponse } from 'next/server'
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
+
+// GET /api/attendance
 export async function GET(request: NextRequest) {
-  const page = Number(request.nextUrl.searchParams.get('page') ?? '1')
-  const limit = Number(request.nextUrl.searchParams.get('limit') ?? '10')
-  const studentId = request.nextUrl.searchParams.get('studentId') ?? ''
-  const classId = request.nextUrl.searchParams.get('classId') ?? ''
-  const date = request.nextUrl.searchParams.get('date') ?? ''
-  const teacherId = request.nextUrl.searchParams.get('teacherId') ?? ''
-  const search = (request.nextUrl.searchParams.get('search') ?? '').toLowerCase()
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/attendance${searchParams ? `?${searchParams}` : ''}`
 
-  const filtered = attendanceRecords.filter((row) => {
-    const matchesStudent = studentId ? row.studentId === studentId : true
-    const matchesClass = classId ? row.className.toLowerCase().includes(classId.toLowerCase()) : true
-    const matchesDate = date ? row.date === date : true
-    const matchesTeacher = teacherId ? row.teacherId === teacherId : true
-    const matchesSearch = search
-      ? `${row.studentName} ${row.rollNumber} ${row.className}`.toLowerCase().includes(search)
-      : true
-    return matchesStudent && matchesClass && matchesDate && matchesTeacher && matchesSearch
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    },
   })
 
-  const safePage = Number.isFinite(page) && page > 0 ? page : 1
-  const safeLimit = Number.isFinite(limit) && limit > 0 ? limit : 10
-  const start = (safePage - 1) * safeLimit
-  const data = filtered.slice(start, start + safeLimit)
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
+}
 
-  return ok<AttendanceRecord[]>('attendance list fetched', data, {
-    page: safePage,
-    limit: safeLimit,
-    total: filtered.length,
+// POST /api/attendance
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/attendance`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    },
+    body: JSON.stringify(body),
   })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
-export async function POST() {
-  return ok('attendance create action accepted', {})
+// PATCH /api/attendance
+export async function PATCH(request: NextRequest) {
+  const body = await request.json()
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/attendance${searchParams ? `?${searchParams}` : ''}`
+
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    },
+    body: JSON.stringify(body),
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }
 
-export async function PATCH() {
-  return ok('attendance patch action accepted', {})
-}
+// DELETE /api/attendance
+export async function DELETE(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/attendance${searchParams ? `?${searchParams}` : ''}`
 
-export async function DELETE() {
-  return ok('attendance delete action accepted', {})
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    },
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

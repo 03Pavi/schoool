@@ -1,1 +1,74 @@
-export { GET, POST, PATCH, DELETE } from '@/app/api/grades/route'
+import { NextRequest, NextResponse } from 'next/server'
+
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
+
+// GET /api/academics/grades
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/academics/grades${searchParams ? `?${searchParams}` : ''}`
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
+}
+
+// POST /api/academics/grades
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/academics/grades`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
+}
+
+// PATCH /api/academics/grades/:id
+export async function PATCH(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const body = await request.json()
+  const url = `${BACKEND_URL}/api/academics/grades?${searchParams}`
+
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+    body: JSON.stringify(body),
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
+}
+
+// DELETE /api/academics/grades/:id
+export async function DELETE(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/academics/grades?${searchParams}`
+
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers
+    },
+  })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
+}

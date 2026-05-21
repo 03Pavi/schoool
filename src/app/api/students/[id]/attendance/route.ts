@@ -1,25 +1,21 @@
-import { NextRequest } from 'next/server'
-import { ok } from '@/shared/api/response'
-import { attendanceRecords } from '@/app/api/attendance/_data'
-import type { AttendanceRecord } from '@/entities/attendance/types'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  const { id } = await context.params
-  const page = Number(request.nextUrl.searchParams.get('page') ?? '1')
-  const limit = Number(request.nextUrl.searchParams.get('limit') ?? '10')
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
 
-  const studentRows = attendanceRecords.filter((row) => row.studentId === id)
-  const safePage = Number.isFinite(page) && page > 0 ? page : 1
-  const safeLimit = Number.isFinite(limit) && limit > 0 ? limit : 10
-  const start = (safePage - 1) * safeLimit
-  const data = studentRows.slice(start, start + safeLimit)
+// GET /api/students/:id/attendance
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const searchParams = request.nextUrl.searchParams.toString()
+  const url = `${BACKEND_URL}/api/students/${id}/attendance${searchParams ? `?${searchParams}` : ''}`
 
-  return ok<AttendanceRecord[]>('student attendance fetched', data, {
-    page: safePage,
-    limit: safeLimit,
-    total: studentRows.length,
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...request.headers,
+    },
   })
+
+  const data = await res.json()
+  return NextResponse.json(data, { status: res.status })
 }

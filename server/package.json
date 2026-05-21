@@ -13,7 +13,7 @@
     "express": "^4.19.2",
     "express-openapi-validator": "^5.1.5",
     "firebase": "12.13.0",
-    "firebase-admin": "^12.4.0",
+    "firebase-admin": "12.7.0",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
     "swagger-ui-express": "5.0.1",
