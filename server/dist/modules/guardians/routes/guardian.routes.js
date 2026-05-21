@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const guardian_controller_1 = require("../controller/guardian.controller");
+const router = (0, express_1.Router)();
+router.get('/', guardian_controller_1.getGuardians);
+router.post('/', guardian_controller_1.createGuardian);
+router.get('/:id', guardian_controller_1.getGuardianById);
+router.patch('/:id', guardian_controller_1.updateGuardian);
+router.delete('/:id', guardian_controller_1.deleteGuardian);
+exports.default = router;

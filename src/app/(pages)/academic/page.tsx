@@ -27,10 +27,10 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { DashboardLayout, PageContainer } from '@/widgets/layout'
-import { AppCard, AppDataDisplay } from '@/shared/ui'
+import { AppCard, AppDataDisplay } from '../../../shared/ui'
 import { useRbac } from '@/entities/permission'
 
-import { useAcademics, Grade, Subject } from '@/features/manage-academics/model/use-academics'
+import { useAcademics } from '@/features/manage-academics/model/use-academics'
 import { GradeFormDialog } from '@/features/manage-academics/ui/grade-form-dialog'
 import { SubjectFormDialog } from '@/features/manage-academics/ui/subject-form-dialog'
 

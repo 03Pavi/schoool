@@ -32,8 +32,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import NoteIcon from '@mui/icons-material/Note'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 
-import { DashboardLayout, PageContainer } from '@/widgets/layout'
-import { useAppDispatch, useAppSelector } from '@/shared/hooks'
+import { DashboardLayout, PageContainer } from '../../../widgets/layout'
+import { useAppDispatch, useAppSelector } from '../../../shared/hooks'  
 import {
   fetchClipboardItemsThunk,
   createClipboardItemThunk,

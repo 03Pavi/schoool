@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const section_controller_1 = require("../controller/section.controller");
+const router = (0, express_1.Router)({ mergeParams: true });
+router.get('/', section_controller_1.getSections);
+router.post('/', section_controller_1.createSection);
+router.get('/:id', section_controller_1.getSectionById);
+router.patch('/:id', section_controller_1.updateSection);
+router.delete('/:id', section_controller_1.deleteSection);
+exports.default = router;

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const clipboard_controller_1 = require("../controller/clipboard.controller");
+const router = (0, express_1.Router)();
+router.get('/', clipboard_controller_1.getClipboard);
+router.post('/', clipboard_controller_1.createClipboard);
+router.get('/:id', clipboard_controller_1.getClipboardById);
+router.patch('/:id', clipboard_controller_1.updateClipboard);
+router.delete('/:id', clipboard_controller_1.deleteClipboard);
+exports.default = router;
