@@ -1,4 +1,6 @@
-import React from 'react'
+'use client';
+
+import React, { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -8,6 +10,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import { AppCard } from '@/shared/ui'
 import { useRbac, Permission } from '@/entities/permission'
+import { useSession } from 'next-auth/react'
 
 interface StatCardProps {
   title: string
@@ -52,53 +55,69 @@ const StatCard = ({ title, value, subtext, icon, iconBg }: StatCardProps) => {
 }
 
 export const StatsCards = () => {
+  const { data: session } = useSession()
   const { hasPermission } = useRbac()
+  const role = session?.user?.role?.toLowerCase() // assuming role is in session.user.role
+  const [stats, setStats] = useState<Array<any>>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const stats = [
-    {
-      title: 'Total Students',
-      value: '1,240',
-      subtext: '+4.5% vs last term',
-      icon: <PeopleAltIcon fontSize="medium" />,
-      iconBg: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-      permission: 'student:view' as Permission,
-    },
-    {
-      title: 'Active Teachers',
-      value: '84',
-      subtext: '100% active status',
-      icon: <SchoolIcon fontSize="medium" />,
-      iconBg: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
-      permission: 'student:view' as Permission,
-    },
-    {
-      title: 'Today Attendance',
-      value: '94.2%',
-      subtext: '+1.2% vs yesterday',
-      icon: <HowToRegIcon fontSize="medium" />,
-      iconBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-      permission: 'attendance:view' as Permission,
-    },
-    {
-      title: 'Fees Collected',
-      value: '$48,250',
-      subtext: '82% of monthly target',
-      icon: <AttachMoneyIcon fontSize="medium" />,
-      iconBg: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
-      permission: 'fees:view' as Permission,
-    },
-  ].filter((stat) => hasPermission(stat.permission))
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!role) {
+        setStats([])
+        setLoading(false)
+        return
+      }
 
-  if (stats.length === 0) return null
+      try {
+        const res = await fetch(`/api/dashboard/${role}`)
+        if (!res.ok) {
+          throw new Error(`Failed to fetch dashboard stats for role ${role}`)
+        }
+        const data = await res.json()
+        // Assuming the backend returns an array of stat objects with the same shape as before
+        setStats(data)
+      } catch (err) {
+        setError(err.message)
+        setStats([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [role])
+
+  if (loading) {
+    return <div className="animate-pulse">Loading dashboard stats...</div>
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error loading dashboard stats: {error}</div>
+  }
+
+  // Filter stats by permission (keeping the original behavior)
+  const filteredStats = stats.filter((stat: any) => 
+    hasPermission(stat.permission as Permission)
+  )
+
+  if (filteredStats.length === 0) return null
 
   // Calculate layout grid widths dynamically based on number of active metrics
-  const mdWidth = Math.max(3, Math.floor(12 / stats.length))
+  const mdWidth = Math.max(3, Math.floor(12 / filteredStats.length))
 
   return (
     <Grid container spacing={2}>
-      {stats.map((stat, i) => (
+      {filteredStats.map((stat: any, i: number) => (
         <Grid item xs={12} sm={6} md={mdWidth} key={i}>
-          <StatCard {...stat} />
+          <StatCard 
+            title={stat.title}
+            value={stat.value}
+            subtext={stat.subtext}
+            icon={stat.icon}
+            iconBg={stat.iconBg}
+          />
         </Grid>
       ))}
     </Grid>

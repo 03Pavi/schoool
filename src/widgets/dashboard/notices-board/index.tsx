@@ -1,37 +1,69 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import { AppCard } from '@/shared/ui'
-
-const notices = [
-  {
-    id: 1,
-    title: 'Final Examination Schedule',
-    date: 'May 24, 2026',
-    priority: 'High',
-    color: 'error',
-    content: 'The end-of-year exams schedule is now officially published. Exams begin June 8, please check portals.',
-  },
-  {
-    id: 2,
-    title: 'Sports Day Re-scheduling',
-    date: 'May 21, 2026',
-    priority: 'Medium',
-    color: 'warning',
-    content: 'Due to forecasted inclement weather, the track-and-field meet has been deferred to June 1.',
-  },
-  {
-    id: 3,
-    title: 'New Library Catalog System',
-    date: 'May 18, 2026',
-    priority: 'Low',
-    color: 'info',
-    content: 'The digital catalog terminal is fully operational. Students can reserve books online.',
-  },
-]
+import { useSession } from 'next-auth/react'
 
 export const NoticesBoard = () => {
+  const { data: session } = useSession()
+  const [notices, setNotices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        // Assuming we have an endpoint for notices
+        // Adjust the endpoint as per your backend
+        const res = await fetch(`/api/dashboard/notices`)
+        if (!res.ok) {
+          throw new Error('Failed to fetch notices')
+        }
+        const result = await res.json()
+        setNotices(result)
+      } catch (err) {
+        setError(err.message)
+        setNotices([]) // Set to empty array on error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNotices()
+  }, [])
+
+  if (loading) {
+    return (
+      <AppCard title="Bulletin & Notices" subheader="Official campus announcements and priority notices">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="animate-pulse">Loading notices...</div>
+        </Box>
+      </AppCard>
+    )
+  }
+
+  if (error) {
+    return (
+      <AppCard title="Bulletin & Notices" subheader="Official campus announcements and priority notices">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="text-red-500">Error: {error}</div>
+        </Box>
+      </AppCard>
+    )
+  }
+
+  // If no notices available, show a message
+  if (!notices || notices.length === 0) {
+    return (
+      <AppCard title="Bulletin & Notices" subheader="Official campus announcements and priority notices">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div>No notices available</div>
+        </Box>
+      </AppCard>
+    )
+  }
+
   return (
     <AppCard title="Bulletin & Notices" subheader="Official campus announcements and priority notices">
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
