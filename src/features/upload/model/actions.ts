@@ -1,20 +1,12 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type UploadRow = Record<string, unknown>
 
-export const fetchUploadSucceeded = createAction<UploadRow[]>('upload/fetchSucceeded')
-export const fetchUploadFailed = createAction<string>('upload/fetchFailed')
 
-export const createUploadSucceeded = createAction<UploadRow>('upload/createSucceeded')
-export const createUploadFailed = createAction<string>('upload/createFailed')
 
-export const patchUploadSucceeded = createAction<UploadRow>('upload/patchSucceeded')
-export const patchUploadFailed = createAction<string>('upload/patchFailed')
 
-export const deleteUploadSucceeded = createAction<{ id: string }>('upload/deleteSucceeded')
-export const deleteUploadFailed = createAction<string>('upload/deleteFailed')
 
 export const fetchUploadThunk = createAsyncThunk<
   UploadRow[],

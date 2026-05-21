@@ -1,20 +1,12 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type GuardiansRow = Record<string, unknown>
 
-export const fetchGuardiansSucceeded = createAction<GuardiansRow[]>('guardians/fetchSucceeded')
-export const fetchGuardiansFailed = createAction<string>('guardians/fetchFailed')
 
-export const createGuardiansSucceeded = createAction<GuardiansRow>('guardians/createSucceeded')
-export const createGuardiansFailed = createAction<string>('guardians/createFailed')
 
-export const patchGuardiansSucceeded = createAction<GuardiansRow>('guardians/patchSucceeded')
-export const patchGuardiansFailed = createAction<string>('guardians/patchFailed')
 
-export const deleteGuardiansSucceeded = createAction<{ id: string }>('guardians/deleteSucceeded')
-export const deleteGuardiansFailed = createAction<string>('guardians/deleteFailed')
 
 export const fetchGuardiansThunk = createAsyncThunk<
   GuardiansRow[],

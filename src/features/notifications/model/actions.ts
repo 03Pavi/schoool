@@ -1,21 +1,8 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type NotificationsRow = Record<string, unknown>
-
-export const fetchNotificationsSucceeded = createAction<NotificationsRow[]>('notifications/fetchSucceeded')
-export const fetchNotificationsFailed = createAction<string>('notifications/fetchFailed')
-
-export const createNotificationsSucceeded = createAction<NotificationsRow>('notifications/createSucceeded')
-export const createNotificationsFailed = createAction<string>('notifications/createFailed')
-
-export const patchNotificationsSucceeded = createAction<NotificationsRow>('notifications/patchSucceeded')
-export const patchNotificationsFailed = createAction<string>('notifications/patchFailed')
-
-export const deleteNotificationsSucceeded = createAction<{ id: string }>('notifications/deleteSucceeded')
-export const deleteNotificationsFailed = createAction<string>('notifications/deleteFailed')
-
 export const fetchNotificationsThunk = createAsyncThunk<
   NotificationsRow[],
   { page?: number; limit?: number; search?: string; sort?: string; order?: 'asc' | 'desc' } | undefined,

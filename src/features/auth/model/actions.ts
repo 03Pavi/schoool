@@ -1,21 +1,8 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type AuthRow = Record<string, unknown>
-
-export const fetchAuthSucceeded = createAction<AuthRow[]>('auth/fetchSucceeded')
-export const fetchAuthFailed = createAction<string>('auth/fetchFailed')
-
-export const createAuthSucceeded = createAction<AuthRow>('auth/createSucceeded')
-export const createAuthFailed = createAction<string>('auth/createFailed')
-
-export const patchAuthSucceeded = createAction<AuthRow>('auth/patchSucceeded')
-export const patchAuthFailed = createAction<string>('auth/patchFailed')
-
-export const deleteAuthSucceeded = createAction<{ id: string }>('auth/deleteSucceeded')
-export const deleteAuthFailed = createAction<string>('auth/deleteFailed')
-
 export const fetchAuthThunk = createAsyncThunk<
   AuthRow[],
   { page?: number; limit?: number; search?: string; sort?: string; order?: 'asc' | 'desc' } | undefined,

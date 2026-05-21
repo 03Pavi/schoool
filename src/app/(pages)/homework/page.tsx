@@ -12,37 +12,18 @@ import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { DashboardLayout, PageContainer } from '@/widgets/layout'
 import { AppCard, AppDataDisplay } from '@/shared/ui'
-import { useAppDispatch } from '@/shared/hooks'
+import { useAppDispatch, useAppSelector } from '@/shared/hooks'
 import {
-  AssignmentRow,
   deleteAssignmentThunk,
-  deleteAssignmentsFailed,
-  deleteAssignmentsSucceeded,
-  fetchAssignmentsFailed,
-  fetchAssignmentsSucceeded,
   fetchAssignmentsThunk,
 } from '@/features/assignments/model/actions'
 
 export default function HomeworkPage() {
   const dispatch = useAppDispatch()
-  const [rows, setRows] = React.useState<AssignmentRow[]>([])
-  const [isLoading, setIsLoading] = React.useState<boolean>(true)
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
+  const { items: rows, loading: isLoading, error: errorMessage } = useAppSelector((state) => state.assignments)
 
   const loadAssignments = React.useCallback(async () => {
-    setIsLoading(true)
-    setErrorMessage(null)
-    try {
-      const data = await dispatch(fetchAssignmentsThunk({ page: 1, limit: 10 })).unwrap()
-      setRows(data)
-      dispatch(fetchAssignmentsSucceeded(data))
-    } catch (error: any) {
-      const message = error || 'Failed to fetch assignments'
-      setErrorMessage(message)
-      dispatch(fetchAssignmentsFailed(message))
-    } finally {
-      setIsLoading(false)
-    }
+    dispatch(fetchAssignmentsThunk({ page: 1, limit: 10 }))
   }, [dispatch])
 
   React.useEffect(() => {
@@ -50,14 +31,7 @@ export default function HomeworkPage() {
   }, [loadAssignments])
 
   const handleDelete = async (id: string) => {
-    try {
-      const deleted = await dispatch(deleteAssignmentThunk({ id })).unwrap()
-      setRows((prev) => prev.filter((row) => row.id !== deleted.id))
-      dispatch(deleteAssignmentsSucceeded(deleted))
-    } catch (error: any) {
-      dispatch(deleteAssignmentsFailed(error || 'Failed to delete assignment'))
-      setErrorMessage(error || 'Failed to delete assignment')
-    }
+    dispatch(deleteAssignmentThunk({ id }))
   }
 
   const columns = [

@@ -1,20 +1,12 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type SearchRow = Record<string, unknown>
 
-export const fetchSearchSucceeded = createAction<SearchRow[]>('search/fetchSucceeded')
-export const fetchSearchFailed = createAction<string>('search/fetchFailed')
 
-export const createSearchSucceeded = createAction<SearchRow>('search/createSucceeded')
-export const createSearchFailed = createAction<string>('search/createFailed')
 
-export const patchSearchSucceeded = createAction<SearchRow>('search/patchSucceeded')
-export const patchSearchFailed = createAction<string>('search/patchFailed')
 
-export const deleteSearchSucceeded = createAction<{ id: string }>('search/deleteSucceeded')
-export const deleteSearchFailed = createAction<string>('search/deleteFailed')
 
 export const fetchSearchThunk = createAsyncThunk<
   SearchRow[],

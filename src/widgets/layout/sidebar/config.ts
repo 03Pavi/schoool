@@ -11,6 +11,7 @@ import LocalLibraryIcon from '@mui/icons-material/LocalLibrary'
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus'
 import SettingsIcon from '@mui/icons-material/Settings'
 import ClassIcon from '@mui/icons-material/Class'
+import AssignmentIcon from '@mui/icons-material/Assignment'
 import { SvgIconTypeMap } from '@mui/material'
 import { OverridableComponent } from '@mui/material/OverridableComponent'
 
@@ -80,6 +81,11 @@ export const sidebarItems: SidebarItem[] = [
     label: 'Transport',
     path: '/transport',
     icon: DirectionsBusIcon,
+  },
+  {
+    label: 'Cloud Clipboard',
+    path: '/clipboard',
+    icon: AssignmentIcon,
   },
   {
     label: 'Settings',

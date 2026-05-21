@@ -1,4 +1,4 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
@@ -10,18 +10,6 @@ export type AssignmentRow = {
   dueDate: string
   status: string
 }
-
-export const fetchAssignmentsSucceeded = createAction<AssignmentRow[]>('assignments/fetchSucceeded')
-export const fetchAssignmentsFailed = createAction<string>('assignments/fetchFailed')
-
-export const createAssignmentsSucceeded = createAction<AssignmentRow>('assignments/createSucceeded')
-export const createAssignmentsFailed = createAction<string>('assignments/createFailed')
-
-export const patchAssignmentsSucceeded = createAction<AssignmentRow>('assignments/patchSucceeded')
-export const patchAssignmentsFailed = createAction<string>('assignments/patchFailed')
-
-export const deleteAssignmentsSucceeded = createAction<{ id: string }>('assignments/deleteSucceeded')
-export const deleteAssignmentsFailed = createAction<string>('assignments/deleteFailed')
 
 export const fetchAssignmentsThunk = createAsyncThunk<
   AssignmentRow[],

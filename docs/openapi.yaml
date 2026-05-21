@@ -1,0 +1,1724 @@
+openapi: 3.0.3
+info:
+  title: Campus School ERP API
+  description: Combined API specifications for the school ERP frontend, grouped by business domain.
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Next.js API Base Proxy Route
+tags:
+  - name: Authentication
+    description: User session and login management
+  - name: Students
+    description: Student profiles and enrollment records
+  - name: Teachers
+    description: Faculty and staff rosters
+  - name: Guardians
+    description: Guardian profile and student relations
+  - name: Subjects
+    description: Subject catalog and departments
+  - name: Assignments
+    description: Homework issues, gradings, and lists
+  - name: Fees
+    description: Tuition invoicing and payment status
+  - name: Library
+    description: Digital library book issues and returns
+  - name: Clipboard
+    description: Snippet clipboard sync service
+  - name: Grades
+    description: Dynamic grade level configurations
+  - name: Classes
+    description: Classroom listings and categories
+  - name: Sections
+    description: Classroom section markers
+  - name: Metadata
+    description: Academic configurations metadata lookups
+paths:
+  /auth:
+    post:
+      summary: User Authentication Login
+      description: Authenticates a user and retrieves the profile, role permissions, and session context.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@erp.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseEnvelope'
+        '400':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /students:
+    get:
+      summary: Fetch Students list
+      description: Returns a paginated list of students. Supports search and sorting parameters.
+      tags:
+        - Students
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Order'
+      responses:
+        '200':
+          description: List of students retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentsListResponseEnvelope'
+    post:
+      summary: Create a New Student
+      description: Registers a new student in the system.
+      tags:
+        - Students
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudentPayload'
+      responses:
+        '201':
+          description: Student created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseEnvelope'
+        '400':
+          description: Validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /students/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique student ID
+        schema:
+          type: string
+    get:
+      summary: Get Student details
+      tags:
+        - Students
+      responses:
+        '200':
+          description: Details of the student retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseEnvelope'
+    patch:
+      summary: Update Student profile
+      tags:
+        - Students
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudentPayload'
+      responses:
+        '200':
+          description: Student updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseEnvelope'
+    delete:
+      summary: Delete/Archive Student record
+      tags:
+        - Students
+      responses:
+        '200':
+          description: Student deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /teachers:
+    get:
+      summary: Fetch Teachers list
+      tags:
+        - Teachers
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: List of teachers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeachersListResponseEnvelope'
+    post:
+      summary: Create a New Teacher Faculty Member
+      tags:
+        - Teachers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherInput'
+      responses:
+        '201':
+          description: Teacher created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponseEnvelope'
+
+  /teachers/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get Teacher details
+      tags:
+        - Teachers
+      responses:
+        '200':
+          description: Details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponseEnvelope'
+    patch:
+      summary: Update Teacher fields
+      tags:
+        - Teachers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherResponseEnvelope'
+    delete:
+      summary: Archive Teacher record
+      tags:
+        - Teachers
+      responses:
+        '200':
+          description: Archived successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /guardians:
+    get:
+      summary: Fetch Guardians List
+      tags:
+        - Guardians
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: List fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardiansListResponseEnvelope'
+    post:
+      summary: Create a Guardian profile
+      tags:
+        - Guardians
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianInput'
+      responses:
+        '201':
+          description: Guardian created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponseEnvelope'
+
+  /guardians/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get Guardian details
+      tags:
+        - Guardians
+      responses:
+        '200':
+          description: Details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponseEnvelope'
+    patch:
+      summary: Update Guardian fields
+      tags:
+        - Guardians
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponseEnvelope'
+    delete:
+      summary: Delete Guardian record
+      tags:
+        - Guardians
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /academics/metadata:
+    get:
+      summary: Get Academic Metadata
+      description: Retrieves the lists of grades, classes, sections, subjects, and teachers lookup option items.
+      tags:
+        - Metadata
+      responses:
+        '200':
+          description: Metadata options retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicMetadataResponseEnvelope'
+
+  /grades:
+    get:
+      summary: Fetch Dynamic Grades List
+      description: Returns list of grade configurations mapped to classes, sections, and subjects.
+      tags:
+        - Grades
+      responses:
+        '200':
+          description: Grades fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradesResponseEnvelope'
+    post:
+      summary: Create Dynamic Grade Level
+      description: Creates a new grade mapped to classes, sections, and subjects.
+      tags:
+        - Grades
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradePayload'
+      responses:
+        '201':
+          description: Grade created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeResponseEnvelope'
+    patch:
+      summary: Update Dynamic Grade Level
+      description: Updates the class, section, and subject mappings for a grade.
+      tags:
+        - Grades
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradePayload'
+      responses:
+        '200':
+          description: Grade updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeResponseEnvelope'
+    delete:
+      summary: Delete Grade Level
+      tags:
+        - Grades
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Grade deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /classes:
+    get:
+      summary: Fetch Class Categories List
+      tags:
+        - Classes
+      responses:
+        '200':
+          description: Classes list fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassesResponseEnvelope'
+    post:
+      summary: Create Class Category
+      tags:
+        - Classes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Class A
+      responses:
+        '201':
+          description: Class created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassResponseEnvelope'
+    patch:
+      summary: Update Class Category
+      tags:
+        - Classes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - name
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Class updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassResponseEnvelope'
+    delete:
+      summary: Delete Class Category
+      tags:
+        - Classes
+      responses:
+        '200':
+          description: Class deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /classes/{class_id}/sections:
+    parameters:
+      - name: class_id
+        in: path
+        required: true
+        description: ID of the class this section belongs to
+        schema:
+          type: string
+    get:
+      summary: Fetch Sections Mapped to a Class
+      description: Returns list of sections associated with the specified class. Sections do not exist independently.
+      tags:
+        - Sections
+      responses:
+        '200':
+          description: Sections list fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionsResponseEnvelope'
+    post:
+      summary: Create Section Under a Class
+      description: Adds a new section linked to the specified class.
+      tags:
+        - Sections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: A
+      responses:
+        '201':
+          description: Section created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionResponseEnvelope'
+
+  /classes/{class_id}/sections/{section_id}:
+    parameters:
+      - name: class_id
+        in: path
+        required: true
+        description: ID of the class this section belongs to
+        schema:
+          type: string
+      - name: section_id
+        in: path
+        required: true
+        description: ID of the section to manage
+        schema:
+          type: string
+    patch:
+      summary: Update Section Mapped to a Class
+      tags:
+        - Sections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: B
+      responses:
+        '200':
+          description: Section updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionResponseEnvelope'
+    delete:
+      summary: Delete Section from a Class
+      tags:
+        - Sections
+      responses:
+        '200':
+          description: Section deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /subjects:
+    get:
+      summary: List Subjects Catalog
+      tags:
+        - Subjects
+      parameters:
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: List fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectsListResponseEnvelope'
+    post:
+      summary: Add a new Subject
+      tags:
+        - Subjects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectInput'
+      responses:
+        '201':
+          description: Subject created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponseEnvelope'
+
+  /subjects/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      summary: Delete a Subject from catalog
+      tags:
+        - Subjects
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /fees:
+    get:
+      summary: Fetch tuition invoices ledger
+      tags:
+        - Fees
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of billing receipts retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeesListResponseEnvelope'
+    post:
+      summary: Generate tuition fee invoice
+      tags:
+        - Fees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeeInput'
+      responses:
+        '201':
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeResponseEnvelope'
+
+  /fees/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get single invoice detail
+      tags:
+        - Fees
+      responses:
+        '200':
+          description: Details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeResponseEnvelope'
+    patch:
+      summary: Update Invoice fields (e.g. status)
+      tags:
+        - Fees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [Paid, Unpaid, Pending]
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeResponseEnvelope'
+    delete:
+      summary: Void invoice record
+      tags:
+        - Fees
+      responses:
+        '200':
+          description: Voided successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /library:
+    get:
+      summary: Search catalog library books
+      tags:
+        - Library
+      parameters:
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: Catalog list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksListResponseEnvelope'
+    post:
+      summary: Catalog a new Book volume
+      tags:
+        - Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Book added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseEnvelope'
+
+  /library/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get book details
+      tags:
+        - Library
+      responses:
+        '200':
+          description: Book details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseEnvelope'
+    patch:
+      summary: Update Book status (e.g. check-out / borrow)
+      tags:
+        - Library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [Available, Borrowed]
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseEnvelope'
+    delete:
+      summary: Remove book from library catalog
+      tags:
+        - Library
+      responses:
+        '200':
+          description: Removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /assignments:
+    get:
+      summary: List Homework and Assignments
+      tags:
+        - Assignments
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentsListResponseEnvelope'
+    post:
+      summary: Create a Homework Assignment
+      tags:
+        - Assignments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponseEnvelope'
+    patch:
+      summary: Update a Homework Assignment
+      tags:
+        - Assignments
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponseEnvelope'
+    delete:
+      summary: Delete Homework Assignment
+      tags:
+        - Assignments
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+  /clipboard:
+    get:
+      summary: List Clipboard Items
+      description: Fetches a list of clipboards. Supports single fetches via query.
+      tags:
+        - Clipboard
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Clipboard list or single item fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClipboardListResponseEnvelope'
+    post:
+      summary: Create a Clipboard Item
+      tags:
+        - Clipboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClipboardInput'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClipboardResponseEnvelope'
+
+  /clipboard/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get Single Clipboard Item
+      tags:
+        - Clipboard
+      responses:
+        '200':
+          description: Clipboard details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClipboardResponseEnvelope'
+    put:
+      summary: Update Clipboard Item content
+      tags:
+        - Clipboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClipboardInput'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClipboardResponseEnvelope'
+    delete:
+      summary: Delete Clipboard Item
+      tags:
+        - Clipboard
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponseEnvelope'
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      description: Current pagination page index
+      schema:
+        type: integer
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Number of records to return per page
+      schema:
+        type: integer
+        default: 10
+    Search:
+      name: search
+      in: query
+      required: false
+      description: Query filter match search term
+      schema:
+        type: string
+    Sort:
+      name: sort
+      in: query
+      required: false
+      description: Column property field to sort by
+      schema:
+        type: string
+    Order:
+      name: order
+      in: query
+      required: false
+      description: Sort ordering direction
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: asc
+
+  schemas:
+    # ACADEMIC OPTIONS & METADATA
+    AcademicOption:
+      type: object
+      properties:
+        id:
+          type: string
+          example: class_a
+        name:
+          type: string
+          example: Class A
+
+    AcademicMetadata:
+      type: object
+      properties:
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        teachers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+
+    AcademicMetadataResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/AcademicMetadata'
+
+    # GRADES
+    GradePayload:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Grade 10
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+          default: ACTIVE
+        class_ids:
+          type: array
+          items:
+            type: string
+          example: ["class_a", "class_b"]
+        section_ids:
+          type: array
+          items:
+            type: string
+          example: ["sec_a", "sec_b"]
+        subject_ids:
+          type: array
+          items:
+            type: string
+          example: ["sub_math", "sub_sci"]
+
+    GradeRow:
+      type: object
+      properties:
+        id:
+          type: string
+          example: grade_1
+        name:
+          type: string
+          example: Grade 10
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+
+    GradeResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/GradeRow'
+
+    GradesResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/GradeRow'
+
+    # CLASSES
+    ClassResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/AcademicOption'
+
+    ClassesResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+
+    # SECTIONS
+    SectionResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/AcademicOption'
+
+    SectionsResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademicOption'
+
+    # BASE ENVELOPES
+    ErrorEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: 'Internal validation schema error'
+    
+    MessageResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: 'Operation performed successfully'
+
+    # AUTHENTICATION
+    AuthResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Login success
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: u-1
+                name:
+                  type: string
+                  example: Admin User
+                email:
+                  type: string
+                  example: admin@erp.com
+                role:
+                  type: string
+                  example: super-admin
+
+    # STUDENTS
+    CreateStudentPayload:
+      type: object
+      required:
+        - name
+        - email
+        - roll_number
+        - class_section
+        - enrollment_date
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.d@school.com
+        roll_number:
+          type: string
+          example: RL-2032
+        class_section:
+          type: string
+          example: Grade 10-A
+        enrollment_date:
+          type: string
+          example: 2026-05-18
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          example: s-12
+        name:
+          type: string
+        email:
+          type: string
+        roll_number:
+          type: string
+        class_section:
+          type: string
+        enrollment_date:
+          type: string
+
+    StudentResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Student'
+
+    StudentsListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+
+    # TEACHERS
+    TeacherInput:
+      type: object
+      required:
+        - name
+        - email
+        - teacher_id
+        - department
+      properties:
+        name:
+          type: string
+          example: Mrs. Emma Watson
+        email:
+          type: string
+          example: emma.w@school.edu
+        teacher_id:
+          type: string
+          example: TC-0042
+        phone:
+          type: string
+          example: +91 98765 43210
+        qualifications:
+          type: string
+          example: M.Sc in Applied Mathematics
+        department:
+          type: string
+          example: Mathematics & Science
+        joining_date:
+          type: string
+          example: 2022-06-15
+        assigned_classes:
+          type: array
+          items:
+            type: string
+          example: ["Grade 10-A", "Grade 9-B"]
+        assigned_sections:
+          type: array
+          items:
+            type: string
+          example: ["A", "B"]
+        assigned_subjects:
+          type: array
+          items:
+            type: string
+          example: ["Mathematics", "Science"]
+        status:
+          type: string
+          enum: [Active, Archived]
+          example: Active
+
+    Teacher:
+      allOf:
+        - $ref: '#/components/schemas/TeacherInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: t-42
+
+    TeacherResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Teacher'
+
+    TeachersListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Teacher'
+
+    # GUARDIANS
+    GuardianInput:
+      type: object
+      required:
+        - name
+        - email
+        - phone
+        - relation
+      properties:
+        name:
+          type: string
+          example: Robert Smith
+        email:
+          type: string
+          example: robert.smith@mail.com
+        phone:
+          type: string
+          example: +91 98765 43222
+        relation:
+          type: string
+          example: Father
+        student_id:
+          type: string
+          example: s-12
+
+    Guardian:
+      allOf:
+        - $ref: '#/components/schemas/GuardianInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: g-5
+
+    GuardianResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Guardian'
+
+    GuardiansListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guardian'
+
+    # SUBJECTS
+    SubjectInput:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+          example: Mathematics
+        code:
+          type: string
+          example: MATH-101
+        department:
+          type: string
+          example: Science & Math
+
+    Subject:
+      allOf:
+        - $ref: '#/components/schemas/SubjectInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: sub-10
+
+    SubjectResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Subject'
+
+    SubjectsListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+
+    # FEES
+    FeeInput:
+      type: object
+      required:
+        - invoice_no
+        - student
+        - amount
+        - due_date
+      properties:
+        invoice_no:
+          type: string
+          example: INV-2026-01
+        student:
+          type: string
+          example: Pavitar Singh
+        amount:
+          type: string
+          example: $1,200
+        due_date:
+          type: string
+          example: 15 June 2026
+        status:
+          type: string
+          enum: [Paid, Unpaid, Pending]
+          default: Unpaid
+
+    Fee:
+      allOf:
+        - $ref: '#/components/schemas/FeeInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: fee-1
+
+    FeeResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Fee'
+
+    FeesListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fee'
+
+    # LIBRARY BOOKS
+    BookInput:
+      type: object
+      required:
+        - book_id
+        - title
+        - author
+        - category
+      properties:
+        book_id:
+          type: string
+          example: BK-0912
+        title:
+          type: string
+          example: Advanced Calculus Vol. 2
+        author:
+          type: string
+          example: Dr. Michael Spivak
+        category:
+          type: string
+          example: Mathematics
+        status:
+          type: string
+          enum: [Available, Borrowed]
+          default: Available
+
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/BookInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: book-1
+
+    BookResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Book'
+
+    BooksListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+
+    # ASSIGNMENTS
+    AssignmentInput:
+      type: object
+      required:
+        - hw_code
+        - title
+        - class
+        - due_date
+      properties:
+        hw_code:
+          type: string
+          example: HW-101
+        title:
+          type: string
+          example: Quadratic Equations Homework
+        class:
+          type: string
+          example: Grade 10-A
+        due_date:
+          type: string
+          example: 2026-05-25
+        status:
+          type: string
+          enum: [Assigned, Graded, Pending]
+          default: Assigned
+
+    Assignment:
+      allOf:
+        - $ref: '#/components/schemas/AssignmentInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: hw-1
+
+    AssignmentResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Assignment'
+
+    AssignmentsListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+
+    # CLIPBOARD
+    ClipboardInput:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          example: Project Idea Notes
+        content:
+          type: string
+          example: Research Rich-Text framework
+    
+    ClipboardItem:
+      allOf:
+        - $ref: '#/components/schemas/ClipboardInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: clip-123
+            created_at:
+              type: string
+              example: 2026-05-21
+
+    ClipboardResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/ClipboardItem'
+
+    ClipboardListResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClipboardItem'

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "title": "Project Idea Notes",
+    "content": "Need to research and integrate Tiptap rich-text editor for the comments component.",
+    "createdAt": "2026-05-20"
+  },
+  {
+    "id": "2",
+    "title": "API Endpoint Reference",
+    "content": "GET /api/v1/resource - returns a list of paginated items.\nPOST /api/v1/resource - creates a new item with request body payload.",
+    "createdAt": "2026-05-21"
+  }
+]

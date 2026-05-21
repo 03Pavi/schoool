@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Scalable ERP Portal',
   description: 'Enterprise Resource Planning system built on high-fidelity scalable architecture.',
   icons: {
-    icon: '/app-logo.png',
+    icon: '/favicon.ico',
   },
 }
 

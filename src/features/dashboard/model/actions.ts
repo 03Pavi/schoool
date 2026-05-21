@@ -1,20 +1,12 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type DashboardRow = Record<string, unknown>
 
-export const fetchDashboardSucceeded = createAction<DashboardRow[]>('dashboard/fetchSucceeded')
-export const fetchDashboardFailed = createAction<string>('dashboard/fetchFailed')
 
-export const createDashboardSucceeded = createAction<DashboardRow>('dashboard/createSucceeded')
-export const createDashboardFailed = createAction<string>('dashboard/createFailed')
 
-export const patchDashboardSucceeded = createAction<DashboardRow>('dashboard/patchSucceeded')
-export const patchDashboardFailed = createAction<string>('dashboard/patchFailed')
 
-export const deleteDashboardSucceeded = createAction<{ id: string }>('dashboard/deleteSucceeded')
-export const deleteDashboardFailed = createAction<string>('dashboard/deleteFailed')
 
 export const fetchDashboardThunk = createAsyncThunk<
   DashboardRow[],

@@ -1,21 +1,8 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type PermissionsRow = Record<string, unknown>
-
-export const fetchPermissionsSucceeded = createAction<PermissionsRow[]>('permissions/fetchSucceeded')
-export const fetchPermissionsFailed = createAction<string>('permissions/fetchFailed')
-
-export const createPermissionsSucceeded = createAction<PermissionsRow>('permissions/createSucceeded')
-export const createPermissionsFailed = createAction<string>('permissions/createFailed')
-
-export const patchPermissionsSucceeded = createAction<PermissionsRow>('permissions/patchSucceeded')
-export const patchPermissionsFailed = createAction<string>('permissions/patchFailed')
-
-export const deletePermissionsSucceeded = createAction<{ id: string }>('permissions/deleteSucceeded')
-export const deletePermissionsFailed = createAction<string>('permissions/deleteFailed')
-
 export const fetchPermissionsThunk = createAsyncThunk<
   PermissionsRow[],
   { page?: number; limit?: number; search?: string; sort?: string; order?: 'asc' | 'desc' } | undefined,

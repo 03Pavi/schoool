@@ -1,21 +1,8 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { apiInstance } from '@/shared/lib'
 import { ApiResponse } from '@/shared/api/contracts'
 
 export type RolesRow = Record<string, unknown>
-
-export const fetchRolesSucceeded = createAction<RolesRow[]>('roles/fetchSucceeded')
-export const fetchRolesFailed = createAction<string>('roles/fetchFailed')
-
-export const createRolesSucceeded = createAction<RolesRow>('roles/createSucceeded')
-export const createRolesFailed = createAction<string>('roles/createFailed')
-
-export const patchRolesSucceeded = createAction<RolesRow>('roles/patchSucceeded')
-export const patchRolesFailed = createAction<string>('roles/patchFailed')
-
-export const deleteRolesSucceeded = createAction<{ id: string }>('roles/deleteSucceeded')
-export const deleteRolesFailed = createAction<string>('roles/deleteFailed')
-
 export const fetchRolesThunk = createAsyncThunk<
   RolesRow[],
   { page?: number; limit?: number; search?: string; sort?: string; order?: 'asc' | 'desc' } | undefined,

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hw-1",
+    "hwCode": "HW-101",
+    "title": "Quadratic Equations Homework",
+    "class": "Grade 10-A",
+    "dueDate": "2026-05-25",
+    "status": "Assigned"
+  },
+  {
+    "id": "hw-2",
+    "hwCode": "HW-102",
+    "title": "Photosynthesis Lab Report",
+    "class": "Grade 9-B",
+    "dueDate": "2026-05-22",
+    "status": "Graded"
+  },
+  {
+    "id": "hw-3",
+    "hwCode": "HW-103",
+    "title": "Ancient Greece Essay",
+    "class": "Grade 10-A",
+    "dueDate": "2026-05-28",
+    "status": "Assigned"
+  }
+]
